@@ -13,16 +13,25 @@ handle('GET', [], Req) ->
     handle_reply({ok, "API is running"}, Req);
 
 handle('GET', ["store", Key], Req) ->
-    handle_reply(store_get(Key), Req);
+    case proplists:get_value("default", Req:parse_qs()) of
+        undefined ->
+            handle_reply(store_get(Key), Req);
+        Default ->
+            handle_reply(store_get(Key, Default), Req)
+    end;
 
-handle('POST', ["store", Key], Req) ->
-    case lists:filter(fun({Param, _}) -> string:equal(Param, "value") end, Req:parse_post()) of
-        [{_, Value}] ->
-            handle_reply(store_put(Key, Value), Req);
-        [] ->
-            handle_reply(error, Req)
-    end.
+handle('PUT', ["store", Key], Req) ->
+    Params = element(1, jiffy:decode(Req:get(body))),
     
+    case proplists:get_value(<<"value">>, Params) of
+        undefined ->
+            handle_reply(error, Req);
+        Value ->
+            handle_reply(store_put(Key, Value), Req)
+    end;
+
+handle('DELETE', ["store", Key], Req) ->
+    handle_reply(store_del(Key), Req).
 
 
 store_get(Key) ->
@@ -39,8 +48,12 @@ store_del(Key) ->
 
 
 handle_reply({ok, Value}, Req) ->
-    Req:ok([{"Content-Type", "text/plain"}], Value);
+    template(Req, {[{status, ok}, {value, unicode:characters_to_binary(Value)}]});
 handle_reply(ok, Req) ->
-    Req:ok([{"Content-Type", "text/plain"}], "ok");
+    template(Req, {[{status, ok}]});
 handle_reply(error, Req) ->
-    Req:ok([{"Content-Type", "text/plain"}], "error").
+    template(Req, {[{status, error}]}).
+
+
+template(Req, Content) ->
+    Req:ok([{"Content-Type", "application/json"}], jiffy:encode(Content)).
