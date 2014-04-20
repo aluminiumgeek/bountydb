@@ -1,6 +1,7 @@
 .eunit
 deps
 ebin
+log
 *.o
 *.beam
 *.plt
