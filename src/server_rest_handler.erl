@@ -20,7 +20,7 @@ handle('POST', ["store", Key], Req) ->
         [{_, Value}] ->
             handle_reply(store_put(Key, Value), Req);
         [] ->
-            handle_reply(error, Req);
+            handle_reply(error, Req)
     end.
     
 
