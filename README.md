@@ -15,7 +15,7 @@ Kick-ass fault tolerant key-value store written in Erlang!
 ###API###
 Bounty DB provides simple HTTP REST API.
 
-####Get value of the key####
+####Get value####
 
     GET /store/{key}
 
