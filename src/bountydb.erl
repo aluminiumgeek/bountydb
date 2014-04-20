@@ -7,4 +7,5 @@ start() ->
 
 stop() ->
     io:format('Stopping database~n'),
+    server:stop(),
     application:stop(bountydb).

@@ -1,6 +1,13 @@
 -module(server).
 
--export([init/1]).
+-behavior(e2_service).
+
+-export([start_link/1]).
+
+-export([init/1, stop/0]).
+
+start_link(Port) ->
+    e2_service:start_link(?MODULE, Port, [registered]).
 
 init(Port) ->
     {ok, listen(Port)}.
