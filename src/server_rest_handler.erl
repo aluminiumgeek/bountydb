@@ -31,7 +31,10 @@ handle('PUT', ["store", Key], Req) ->
     end;
 
 handle('DELETE', ["store", Key], Req) ->
-    handle_reply(store_del(Key), Req).
+    handle_reply(store_del(Key), Req);
+
+handle(_, _, Req) ->
+    template(Req, {[{status, error}]}).
 
 
 store_get(Key) ->
