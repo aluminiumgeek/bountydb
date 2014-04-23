@@ -1,6 +1,6 @@
 -module(store).
 
--export([open/1, put/3, get/2, get/3, del/2]).
+-export([open/1, put/4, get/2, get/3, del/2]).
 
 open(File) ->
     create_bloom_filter(),
@@ -10,7 +10,7 @@ open(File) ->
     
     {ok, Db}.
 
-put(Db, Key, Value) ->
+put(Db, Key, Value, Expire) ->
     Bloom = get_bloom(),
     case bloom:is_element(Key, Bloom) of
         true ->
@@ -19,7 +19,14 @@ put(Db, Key, Value) ->
             ets:insert(bloom_filter, {first, bloom:add_element(Key, Bloom)})
     end,
     
-    dets:insert(Db, {Key, Value}).
+    case Expire of
+        0 ->
+            Expiration = 0;
+        Append ->
+            Expiration = utils:get_unixtime() + Append
+    end,
+
+    dets:insert(Db, {Key, {Value, Expiration}}).
 
 get(Db, Key) ->
     Bloom = get_bloom(),
@@ -43,7 +50,21 @@ del(Db, Key) ->
     dets:delete(Db, Key).
 
 
-handle_store_lookup([{_, Value}]) -> {ok, Value};
+handle_store_lookup([{_, Entry}]) ->
+    {Value, Expiration} = Entry,
+    
+    case Expiration of
+        0 ->
+            {ok, Value};
+        Timestamp ->
+            case utils:get_unixtime() =< Timestamp of
+                true ->
+                    {ok, Value};
+                false ->
+                    error
+            end
+    end;
+
 handle_store_lookup([]) -> error.
 %handle_store_lookup([{_, Value}], _) -> {ok, Value};
 %handle_store_lookup([], Default) -> {ok, Default}.

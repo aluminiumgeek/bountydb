@@ -39,7 +39,20 @@ When no value:
 
     PUT /store/{key}
 
-Request body must be JSON string like this <code>{"value": "myValue"}</code>
+Request body must be JSON string.  
+Example, set value:
+
+    {
+        "value": "myValue"
+    }
+
+Example, set value with a *one minute timeout* on key (after this timeout has expired, the key will automatically deleted):
+
+    {
+        "value": "myValue",
+        "timeout": 60
+    }
+
 
 Answer:
 

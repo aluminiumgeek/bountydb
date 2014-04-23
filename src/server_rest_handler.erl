@@ -27,7 +27,14 @@ handle('PUT', ["store", Key], Req) ->
         undefined ->
             handle_reply(error, Req);
         Value ->
-            handle_reply(store_put(Key, Value), Req)
+            case proplists:get_value(<<"timeout">>, Params) of
+                undefined ->
+                    Expire = 0;
+                Timeout ->
+                    Expire = Timeout
+            end,
+            
+            handle_reply(store_put(Key, Value, Expire), Req)
     end;
 
 handle('DELETE', ["store", Key], Req) ->
@@ -43,8 +50,8 @@ store_get(Key) ->
 store_get(Key, Default) ->
     data:get(Key, Default).
 
-store_put(Key, Value) ->
-    data:put(Key, Value).
+store_put(Key, Value, Expire) ->
+    data:put(Key, Value, Expire).
 
 store_del(Key) ->
     data:del(Key).
