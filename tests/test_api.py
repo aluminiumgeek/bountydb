@@ -72,6 +72,10 @@ class TestApi(unittest.TestCase):
         response = self._get_response('GET', '/store/{0}'.format(self.key))
         
         self.assertEqual(response['status'], 'error')
+        
+    def test_del_value(self):
+        response = self._get_response('DELETE', '/store/{0}'.format(self.key))
+        self.assertEqual(response['status'], 'ok')
 
     def _get_response(self, method, uri, body=''):
         self.connection.request(method, uri, json.dumps(body))
