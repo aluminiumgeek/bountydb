@@ -65,9 +65,9 @@ handle_store_lookup([{_, Entry}]) ->
             end
     end;
 
+handle_store_lookup({_, Default}) -> {ok, Default};
 handle_store_lookup([]) -> error.
 %handle_store_lookup([{_, Value}], _) -> {ok, Value};
-%handle_store_lookup([], Default) -> {ok, Default}.
 
 
 create_bloom_filter() ->
