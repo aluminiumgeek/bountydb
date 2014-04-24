@@ -32,25 +32,24 @@ get(Db, Key) ->
     Bloom = get_bloom(),
     case bloom:is_element(Key, Bloom) of
         true ->
-            handle_store_lookup(dets:lookup(Db, Key));
+            handle_store_lookup(Db, dets:lookup(Db, Key));
         false ->
             handle_store_lookup([])
     end.
 
 get(Db, Key, Default) ->
-    Bloom = get_bloom(),
-    case bloom:is_element(Key, Bloom) of
-        true ->
-            handle_store_lookup(dets:lookup(Db, Key));
-        false ->
-            handle_store_lookup({ok, Default})
+    case get(Db, Key) of
+        {ok, Value} ->
+            {ok, Value};
+        error ->
+            {ok, Default}
     end.
 
 del(Db, Key) ->
     dets:delete(Db, Key).
 
 
-handle_store_lookup([{_, Entry}]) ->
+handle_store_lookup(Db, [{Key, Entry}]) ->
     {Value, Expiration} = Entry,
     
     case Expiration of
@@ -61,13 +60,13 @@ handle_store_lookup([{_, Entry}]) ->
                 true ->
                     {ok, Value};
                 false ->
+                    del(Db, Key),
                     error
             end
     end;
 
-handle_store_lookup({_, Default}) -> {ok, Default};
+handle_store_lookup(Db, []) -> error.
 handle_store_lookup([]) -> error.
-%handle_store_lookup([{_, Value}], _) -> {ok, Value};
 
 
 create_bloom_filter() ->
