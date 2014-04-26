@@ -21,7 +21,13 @@ handle('GET', ["store", Key], Req) ->
     end;
 
 handle('PUT', ["store", Key], Req) ->
-    Params = element(1, jiffy:decode(Req:get(body))),
+    Params = 
+        try jiffy:decode(Req:get(body)) of
+            Body ->
+                element(1, Body)
+        catch _:_ ->
+            []
+        end,
     
     case proplists:get_value(<<"value">>, Params) of
         undefined ->
@@ -31,7 +37,12 @@ handle('PUT', ["store", Key], Req) ->
                 undefined ->
                     Expire = 0;
                 Timeout ->
-                    Expire = Timeout
+                    case is_integer(Timeout) of
+                        true ->
+                            Expire = Timeout;
+                        false ->
+                            Expire = 0
+                    end
             end,
             
             handle_reply(store_put(Key, Value, Expire), Req)

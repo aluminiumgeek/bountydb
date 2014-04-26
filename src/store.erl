@@ -65,7 +65,7 @@ handle_store_lookup(Db, [{Key, Entry}]) ->
             end
     end;
 
-handle_store_lookup(Db, []) -> error.
+handle_store_lookup(_, []) -> error.
 handle_store_lookup([]) -> error.
 
 
