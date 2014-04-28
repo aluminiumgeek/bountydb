@@ -1,6 +1,6 @@
 #Bounty DB#
 
-Kick-ass fault tolerant key-value store written in Erlang!
+A simple key-value store written in Erlang.
 
 Bounty DB is very fast and clean, it implements [Bloom filter](http://en.wikipedia.org/wiki/Bloom_filter‎) to reduce disk lookups for non-existent keys.
 
