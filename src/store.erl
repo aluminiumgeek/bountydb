@@ -71,7 +71,7 @@ handle_store_lookup([]) -> error.
 
 create_bloom_filter() ->
     ets:new(bloom_filter, [set, public, named_table]),
-    ets:insert(bloom_filter, {first, bloom:new(2000)}).
+    ets:insert(bloom_filter, {first, bloom:new(4096)}).
 
 fill_bloom_filter(Db) ->
     lists:foreach(fun(N) ->
