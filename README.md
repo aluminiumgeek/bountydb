@@ -1,29 +1,29 @@
-#Bounty DB#
+# Bounty DB
 
 A simple key-value store written in Erlang.
 
 Bounty DB is very fast and clean, it implements [Bloom filter](http://en.wikipedia.org/wiki/Bloom_filter‎) to reduce disk lookups for non-existent keys.
 
-###Requirements###
+### Requirements
 * Erlang
 
-###Setup###
+### Setup
 
 * Run <code>make</code> inside the directory that contains cloned repo
 * Open <code>main.config</code>, set the server port and path to db file
 * Start server with <code>config=main ./start</code> command. However, you can make your config file and specify its filename to the <code>config</code> param.
 * You can check status of the server with <code>./status</code> command, and stop the server by <code>./stop</code>
 
-###API###
+### API
 Bounty DB provides simple HTTP REST API.
 
-####Get value####
+#### Get value
 
     GET /store/{key}
 
 You can append parameter <code>default={defaultValue}</code> to the request. This default value will return if there's no stored value for specified key in the database
 
-Answer:
+Response:
 
     {
         "status": "ok",
@@ -35,7 +35,7 @@ When no value:
         "status": "error"
     }
 
-####Save value####
+#### Save value
 
     PUT /store/{key}
 
@@ -54,18 +54,18 @@ Example, set value with a *one minute timeout* on key (after this timeout has ex
     }
 
 
-Answer:
+Response:
 
     {
         "status": "ok"
     }
 
 
-####Delete value####
+#### Delete value
 
     DELETE /store/{key}
 
-Answer:
+Response:
 
     {
         "status": "ok"
